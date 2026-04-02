@@ -1,24 +1,39 @@
 """
-SQLAlchemy database session management.
+SQLAlchemy async database session management.
 """
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from collections.abc import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from app.core.config import settings
 
-engine = create_engine(
+engine = create_async_engine(
     str(settings.SQLALCHEMY_DATABASE_URI),
     pool_pre_ping=True,
     pool_recycle=3600,
+    pool_size=10,
+    max_overflow=20,
+    echo=settings.ENVIRONMENT == "development",
 )
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+AsyncSessionLocal = async_sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    autocommit=False,
+    autoflush=False,
+    expire_on_commit=False,
+)
 
 
-# Dependency for FastAPI routes
-def get_db():
-    """Yield a database session, auto-close on exit."""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """Yield an async database session, auto-close on exit."""
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise

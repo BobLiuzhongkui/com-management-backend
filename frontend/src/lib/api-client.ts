@@ -8,6 +8,12 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+export const authInterceptor = {
+  setToken(_token: string | null) {
+    // Token is read from localStorage in request interceptor
+  },
+};
+
 api.interceptors.request.use((config) => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   if (token) config.headers.Authorization = `Bearer ${token}`;

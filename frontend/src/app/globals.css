@@ -57,3 +57,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  /* Fallback styles in case CSS vars don't resolve */
+  .card {
+    @apply border border-border rounded-lg shadow-sm;
+    background-color: hsl(var(--card, 0 0% 100%));
+  }
+  .muted-text {
+    color: hsl(var(--muted-foreground));
+  }
+}
