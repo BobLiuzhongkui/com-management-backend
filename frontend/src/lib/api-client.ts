@@ -1,5 +1,5 @@
 /**
- * API Client — Axios instance.
+ * API client with auth interceptors
  */
 import axios from 'axios';
 
