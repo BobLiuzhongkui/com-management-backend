@@ -1,6 +1,8 @@
 """
 Security utilities: password hashing and JWT token management.
 """
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID

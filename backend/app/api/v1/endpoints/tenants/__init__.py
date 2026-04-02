@@ -1,5 +1,5 @@
+from __future__ import annotations
 """
-Init modules.
+Tenant API endpoints.
 """
-from . import base
-from . import tenant
+from .tenants import router  # noqa: F401

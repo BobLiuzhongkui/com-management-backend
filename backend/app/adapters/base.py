@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Abstract Adapter layer for external integrations.
 Define interfaces here to keep business logic decoupled from specific providers.

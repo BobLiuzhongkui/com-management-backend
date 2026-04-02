@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Authentication endpoints: login, token refresh, logout, current user.
 """

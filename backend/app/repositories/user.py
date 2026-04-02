@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Repository: User data access layer (async SQLAlchemy).
 """
