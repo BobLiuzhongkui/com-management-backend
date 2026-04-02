@@ -1,5 +1,5 @@
 /**
- * API Client — Axios instance with interceptors.
+ * API Client — Axios instance.
  */
 import axios from 'axios';
 
@@ -8,23 +8,18 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Auto-attach token
 api.interceptors.request.use((config) => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// 401 → redirect to login
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401 && typeof window !== 'undefined') {
-      localStorage.removeItem('token');
+  (r) => r,
+  (err) => {
+    if (err.response?.status === 401 && typeof window !== 'undefined') {
       window.location.href = '/login';
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
