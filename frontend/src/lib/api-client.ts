@@ -3,8 +3,16 @@
  */
 import axios from 'axios';
 
+function resolveApiBaseUrl() {
+  const raw = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (!raw) return 'http://localhost:8001/api/v1';
+  return raw.endsWith('/api/v1')
+    ? raw
+    : `${raw.replace(/\/+$/, '')}/api/v1`;
+}
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api/v1',
+  baseURL: resolveApiBaseUrl(),
   headers: { 'Content-Type': 'application/json' },
 });
 

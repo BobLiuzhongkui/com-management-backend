@@ -193,6 +193,20 @@ def make_token(sub: str) -> str:
     )
 
 
+def _create_token(data_or_sub) -> str:
+    """Backwards-compatible alias for older sync tests."""
+    if isinstance(data_or_sub, dict):
+        sub = data_or_sub.get("sub")
+    else:
+        sub = data_or_sub
+    if not sub:
+        raise ValueError("Token subject is required")
+    return make_token(sub)
+
+
+create_access_token = _create_token
+
+
 def get_current_user(token: str = Depends(oauth2), db: Session = Depends(get_db)):
     """Fixed: old code silently returned None on bad tokens."""
     try:
@@ -322,19 +336,19 @@ def stats(db: Session = Depends(get_db), _user=Depends(get_current_user)):
 
 
 @app.get("/api/v1/tenants")
-def list_tenants(db: Session = Depends(get_db)):
+def list_tenants(db: Session = Depends(get_db), _user=Depends(get_current_user)):
     return db.query(Tenant).all()
 
 
 @app.post("/api/v1/tenants", status_code=201)
-def create_tenant(body: TenantIn, db: Session = Depends(get_db)):
+def create_tenant(body: TenantIn, db: Session = Depends(get_db), _user=Depends(get_current_user)):
     """FIX: validated input via TenantIn schema."""
     t = Tenant(**body.model_dump())
     db.add(t); db.commit(); db.refresh(t); return t
 
 
 @app.get("/api/v1/tenants/{tid}")
-def get_tenant(tid: int, db: Session = Depends(get_db)):
+def get_tenant(tid: int, db: Session = Depends(get_db), _user=Depends(get_current_user)):
     t = db.query(Tenant).filter(Tenant.id == tid).first()
     if not t:
         raise HTTPException(404, "not found")
@@ -342,7 +356,7 @@ def get_tenant(tid: int, db: Session = Depends(get_db)):
 
 
 @app.put("/api/v1/tenants/{tid}")
-def update_tenant(tid: int, body: TenantPatch, db: Session = Depends(get_db)):
+def update_tenant(tid: int, body: TenantPatch, db: Session = Depends(get_db), _user=Depends(get_current_user)):
     """FIX: proper patch with exclude_unset."""
     t = db.query(Tenant).filter(Tenant.id == tid).first()
     if not t:
@@ -353,7 +367,7 @@ def update_tenant(tid: int, body: TenantPatch, db: Session = Depends(get_db)):
 
 
 @app.delete("/api/v1/tenants/{tid}")
-def delete_tenant(tid: int, db: Session = Depends(get_db)):
+def delete_tenant(tid: int, db: Session = Depends(get_db), _user=Depends(get_current_user)):
     t = db.query(Tenant).filter(Tenant.id == tid).first()
     if not t:
         raise HTTPException(404, "not found")
@@ -361,18 +375,18 @@ def delete_tenant(tid: int, db: Session = Depends(get_db)):
 
 
 @app.get("/api/v1/com-providers")
-def list_providers(db: Session = Depends(get_db)):
+def list_providers(db: Session = Depends(get_db), _user=Depends(get_current_user)):
     return db.query(ComProvider).all()
 
 
 @app.post("/api/v1/com-providers", status_code=201)
-def create_provider(body: ProviderIn, db: Session = Depends(get_db)):
+def create_provider(body: ProviderIn, db: Session = Depends(get_db), _user=Depends(get_current_user)):
     p = ComProvider(**body.model_dump())
     db.add(p); db.commit(); db.refresh(p); return p
 
 
 @app.put("/api/v1/com-providers/{pid}")
-def update_provider(pid: int, body: ProviderPatch, db: Session = Depends(get_db)):
+def update_provider(pid: int, body: ProviderPatch, db: Session = Depends(get_db), _user=Depends(get_current_user)):
     p = db.query(ComProvider).filter(ComProvider.id == pid).first()
     if not p:
         raise HTTPException(404, "not found")
@@ -382,7 +396,7 @@ def update_provider(pid: int, body: ProviderPatch, db: Session = Depends(get_db)
 
 
 @app.delete("/api/v1/com-providers/{pid}")
-def delete_provider(pid: int, db: Session = Depends(get_db)):
+def delete_provider(pid: int, db: Session = Depends(get_db), _user=Depends(get_current_user)):
     p = db.query(ComProvider).filter(ComProvider.id == pid).first()
     if not p:
         raise HTTPException(404, "not found")
@@ -390,22 +404,22 @@ def delete_provider(pid: int, db: Session = Depends(get_db)):
 
 
 @app.get("/api/v1/messages")
-def list_msgs(db: Session = Depends(get_db)):
+def list_msgs(db: Session = Depends(get_db), _user=Depends(get_current_user)):
     return db.query(Message).all()
 
 
 @app.post("/api/v1/messages", status_code=201)
-def create_msg(body: MessageIn, db: Session = Depends(get_db)):
+def create_msg(body: MessageIn, db: Session = Depends(get_db), _user=Depends(get_current_user)):
     m = Message(**body.model_dump())
     db.add(m); db.commit(); db.refresh(m); return m
 
 
 @app.get("/api/v1/billing")
-def list_bills(db: Session = Depends(get_db)):
+def list_bills(db: Session = Depends(get_db), _user=Depends(get_current_user)):
     return db.query(Billing).all()
 
 
 @app.post("/api/v1/billing", status_code=201)
-def create_bill(body: BillingIn, db: Session = Depends(get_db)):
+def create_bill(body: BillingIn, db: Session = Depends(get_db), _user=Depends(get_current_user)):
     b = Billing(**body.model_dump())
     db.add(b); db.commit(); db.refresh(b); return b

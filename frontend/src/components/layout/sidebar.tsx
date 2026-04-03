@@ -13,6 +13,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  if (pathname === '/login') return null;
 
   return (
     <aside className="w-64 h-screen bg-gray-900 text-white flex flex-col flex-shrink-0">

@@ -1,12 +1,9 @@
 /**
  * Layout with auth guard and sidebar
  */
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/lib/providers';
 import { Sidebar } from '@/components/layout/sidebar';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Com Management',
@@ -16,7 +13,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
-      <body className={inter.className}>
+      <body>
         <Providers>
           <div className="flex h-screen overflow-hidden bg-gray-50">
             <Sidebar />
